@@ -1,2 +1,2 @@
-# ws_toolkit
+# WinterSpring Toolkit
 Internal toolkit for WinterSpring studio
