@@ -65,5 +65,8 @@ def getLiveData(username, passwd):
 
         dataDic[name] = data
 
+    sleep(2)
+    driver.quit()
+
     return dataDic
 
