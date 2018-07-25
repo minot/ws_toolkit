@@ -4,8 +4,8 @@ import pandas as pd
 import datetime
 import liveData as ld
 
-ACCT_XLS="C:\\Users\\Min Wang\\Desktop\\账号.xlsx"
-LIVE_STATS = "C:\\Users\\Min Wang\\Desktop\\STATS.xlsx"
+ACCT_XLS = "C:\\Users\\Min Wang\\Desktop\\账号.xlsx"
+LIVE_STATS_OUTPUT_XLS = "C:\\Users\\Min Wang\\Desktop\\STATS.xlsx"
 COL_ORDER = ['人气峰值', '礼物金豆', '直播时长', '新增订阅', '获得分享', '直播时长（分）']
 
 
@@ -46,9 +46,11 @@ def process():
 
     date_rng = gen_date_range_index()
 
+    writer = pd.ExcelWriter(LIVE_STATS_OUTPUT_XLS)
     for key, value in data.items():
         df = to_data_frame(value, date_rng)
-        df.to_excel(LIVE_STATS, sheet_name=key)
+        df.to_excel(writer, sheet_name=key)
+    writer.save()
 
 
 process()
