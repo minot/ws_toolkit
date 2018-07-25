@@ -34,7 +34,8 @@ def login(username, passwd, driver):
     login_button.click()
     sleep(5)
 
-def initBrower():
+
+def init_browser():
     chrome_options = Options()
     driver = webdriver.Chrome(chrome_options=chrome_options)
     driver.maximize_window()
@@ -42,10 +43,11 @@ def initBrower():
 
     return driver
 
-def getLiveData(username, passwd):
-    dataDic = {}
 
-    driver = initBrower()
+def get_live_data(username, passwd):
+    data_dic = {}
+
+    driver = init_browser()
     login(username, passwd, driver)
 
     # Go to profile live history tag
@@ -63,10 +65,10 @@ def getLiveData(username, passwd):
         name = driver.execute_script("return window.option.series[0].name")
         data = driver.execute_script("return window.option.series[0].data")
 
-        dataDic[name] = data
+        data_dic[name] = data
 
     sleep(2)
     driver.quit()
 
-    return dataDic
+    return data_dic
 
