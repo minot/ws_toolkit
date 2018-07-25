@@ -6,10 +6,10 @@ from selenium.webdriver.support.ui import WebDriverWait
 from time import sleep
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
+import lsConfig
 
-HY_URL = "https://i.huya.com/"
 
-TAGS = ('iDuration', 'iPeakViewer', 'iGiftCount', 'iNewFans', 'iLiveShare')
+SOURCE_CONFIG = lsConfig.config()['SOURCE']
 
 
 def login(username, passwd, driver):
@@ -39,7 +39,7 @@ def init_browser():
     chrome_options = Options()
     driver = webdriver.Chrome(chrome_options=chrome_options)
     driver.maximize_window()
-    driver.get(HY_URL)
+    driver.get(SOURCE_CONFIG['hy_url'])
 
     return driver
 
@@ -58,7 +58,7 @@ def get_live_data(username, passwd):
     driver.find_element(By.CSS_SELECTOR, 'div.live__statistics > ul.tit-tabs > li:nth-child(2)').click()
 
     # List tags
-    for tag in TAGS:
+    for tag in SOURCE_CONFIG['tags']:
         i_tag = "#" + tag
         sleep(5)
         driver.find_element(By.CSS_SELECTOR, i_tag).click()

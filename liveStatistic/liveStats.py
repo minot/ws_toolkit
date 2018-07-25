@@ -2,15 +2,15 @@
 
 import pandas as pd
 import datetime
-import liveData as ld
+import liveData as lD
+import lsConfig
 
-ACCT_XLS = "C:\\Users\\Min Wang\\Desktop\\账号.xlsx"
-LIVE_STATS_OUTPUT_XLS = "C:\\Users\\Min Wang\\Desktop\\STATS.xlsx"
-COL_ORDER = ['人气峰值', '礼物金豆', '直播时长', '新增订阅', '获得分享', '直播时长（分）']
+
+OUTPUT_CONFIG = lsConfig.config()['OUTPUT']
 
 
 def get_accounts():
-    accounts = pd.read_excel(ACCT_XLS, sheet_name="account")
+    accounts = pd.read_excel(OUTPUT_CONFIG['acct_xls'], sheet_name="account")
     return accounts
 
 
@@ -18,7 +18,7 @@ def get_data(accounts):
     data = {}
 
     for index, row in accounts.iterrows():
-        live_data = ld.get_live_data(str(row[1]), str(row[2]))
+        live_data = lD.get_live_data(str(row[1]), str(row[2]))
         data[str(row[0])] = live_data
 
     return data
@@ -34,10 +34,18 @@ def gen_date_range_index():
 
 
 def to_data_frame(live_data, date_rng):
-    live_data['直播时长'] = [0] * 30
-    df = pd.DataFrame(live_data, columns=COL_ORDER, index=date_rng)
+    full_live_data = gen_dummy_data(live_data)
+
+    df = pd.DataFrame(full_live_data, columns=OUTPUT_CONFIG['column_order'], index=date_rng)
 
     return df
+
+
+def gen_dummy_data(live_data):
+    for key, value in OUTPUT_CONFIG['dummy_tags']:
+        live_data[value] = [''] * 30
+
+    return live_data
 
 
 def process():
@@ -46,7 +54,7 @@ def process():
 
     date_rng = gen_date_range_index()
 
-    writer = pd.ExcelWriter(LIVE_STATS_OUTPUT_XLS)
+    writer = pd.ExcelWriter(OUTPUT_CONFIG['live_stats_output_xls'])
     for key, value in data.items():
         df = to_data_frame(value, date_rng)
         df.to_excel(writer, sheet_name=key)
