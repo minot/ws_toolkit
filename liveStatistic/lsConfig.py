@@ -13,3 +13,4 @@ def config():
     conf = yaml.load(cont)
 
     return conf
+
