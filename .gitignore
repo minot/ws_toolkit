@@ -1,3 +1,4 @@
 .idea/
 venv/
 liveStatistic/config.yaml
+liveStatistic/__pycache__/
