@@ -26,7 +26,7 @@ def get_data(accounts):
 
 def gen_date_range_index():
     td = datetime.date.today()
-    delta = datetime.timedelta(days=31)
+    delta = datetime.timedelta(days=30)
     start_day = td - delta
     date_rng = pd.date_range(start_day, periods=30, freq='D')
 
@@ -42,7 +42,7 @@ def to_data_frame(live_data, date_rng):
 
 
 def gen_dummy_data(live_data):
-    for key, value in OUTPUT_CONFIG['dummy_tags']:
+    for key, value in OUTPUT_CONFIG['dummy_tags'].items():
         live_data[value] = [''] * 30
 
     return live_data
