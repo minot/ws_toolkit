@@ -7,9 +7,12 @@ from time import sleep
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 import lsConfig
+import logging
+import logging.config
 
 
 SOURCE_CONFIG = lsConfig.config()['SOURCE']
+logging.config.fileConfig("logger.conf")
 
 
 def login(username, passwd, driver):
@@ -49,6 +52,7 @@ def get_live_data(username, passwd):
 
     driver = init_browser()
     login(username, passwd, driver)
+    logging.info("Log in user :" + username)
 
     # Go to profile live history tag
     driver.find_element_by_xpath("//a[@menu='profileLiveHistory']").click()
@@ -69,6 +73,7 @@ def get_live_data(username, passwd):
 
     sleep(2)
     driver.quit()
+    logging.info("Log out user: " + username)
 
     return data_dic
 

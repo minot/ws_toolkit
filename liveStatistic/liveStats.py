@@ -4,9 +4,12 @@ import pandas as pd
 import datetime
 import liveData as lD
 import lsConfig
+import logging
+import logging.config
 
 
 OUTPUT_CONFIG = lsConfig.config()['OUTPUT']
+logging.config.fileConfig("logger.conf")
 
 
 def get_accounts():
@@ -18,7 +21,15 @@ def get_data(accounts):
     data = {}
 
     for index, row in accounts.iterrows():
-        live_data = lD.get_live_data(str(row[1]), str(row[2]))
+        logging.info("Start to get live data for user: " + index)
+
+        try:
+            live_data = lD.get_live_data(str(row[1]), str(row[2]))
+        except Exception as err:
+            logging.error("Got exception: " + err)
+        else:
+            logging.info("Retrieved live data: " + str(live_data))
+
         data[str(row[0])] = live_data
 
     return data
@@ -49,16 +60,20 @@ def gen_dummy_data(live_data):
 
 
 def process():
+    logging.info("Start to process live statistic.")
     accounts = get_accounts()
-    data = get_data(accounts)
+    data_dic = get_data(accounts)
 
     date_rng = gen_date_range_index()
 
     writer = pd.ExcelWriter(OUTPUT_CONFIG['live_stats_output_xls'])
-    for key, value in data.items():
-        df = to_data_frame(value, date_rng)
-        df.to_excel(writer, sheet_name=key)
+    for user, data in data_dic.items():
+        data_frame = to_data_frame(data, date_rng)
+        logging.info("Going to write live data to sheet: " + user)
+        data_frame.to_excel(writer, sheet_name=user)
     writer.save()
+    logging.info("All sheets are written to excel [" + OUTPUT_CONFIG['live_stats_output_xls'] + "].")
 
+    logging.info("Live statistic processed.")
 
 process()
