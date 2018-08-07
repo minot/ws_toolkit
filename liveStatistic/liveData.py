@@ -38,6 +38,20 @@ def login(username, passwd, driver):
     sleep(5)
 
 
+def login_with_cookies(cookies_obj, driver):
+    cookies = []
+    if(isinstance(cookies_obj, str)):
+        cookies = eval(cookies_obj)
+    else:
+        cookies = cookies_obj
+
+    for cookie in cookies:
+        driver.add_cookie(cookie)
+    sleep(2)
+    driver.get(SOURCE_CONFIG['hy_url'])
+    sleep(10)
+
+
 def init_browser():
     chrome_options = Options()
     driver = webdriver.Chrome(chrome_options=chrome_options)
@@ -47,17 +61,32 @@ def init_browser():
     return driver
 
 
-def get_live_data(username, passwd):
+def get_cookies(driver):
+    cookies = []
+    cookies_from_browser = driver.get_cookies()
+
+    for item in cookies_from_browser:
+        cookies.append({'name': item['name'], 'value':item['value']})
+
+    return cookies
+
+
+def get_live_data(username, passwd, cookies):
     data_dic = {}
 
     driver = init_browser()
-    login(username, passwd, driver)
-    logging.info("Log in user :" + username)
+
+    if(False):
+        login_with_cookies(cookies, driver)
+        logging.info("Log in with cookies for user: " + str(username))
+    else:
+        login(username, passwd, driver)
+        logging.info("Log in with acc/pwd for user: " + str(username))
+        logging.info("Cookies: " + str(get_cookies(driver)))
 
     # Go to profile live history tag
     driver.find_element_by_xpath("//a[@menu='profileLiveHistory']").click()
 
-    sleep(5)
     # Go to 30 day statistics
     driver.find_element(By.CSS_SELECTOR, 'div.live__statistics > ul.tit-tabs > li:nth-child(2)').click()
 
@@ -73,7 +102,7 @@ def get_live_data(username, passwd):
 
     sleep(2)
     driver.quit()
-    logging.info("Log out user: " + username)
+    logging.info("Log out user: " + str(username))
 
     return data_dic
 

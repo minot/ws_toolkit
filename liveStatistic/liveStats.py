@@ -21,16 +21,19 @@ def get_data(accounts):
     data = {}
 
     for index, row in accounts.iterrows():
-        logging.info("Start to get live data for user: " + index)
+        user = row[1]
+        passwd = row[2]
+        cookies = row[3]
+        logging.info("Start to get live data for user: " + str(user))
 
         try:
-            live_data = lD.get_live_data(str(row[1]), str(row[2]))
+            live_data = lD.get_live_data(user, passwd, cookies)
         except Exception as err:
             logging.error("Got exception: " + err)
         else:
             logging.info("Retrieved live data: " + str(live_data))
 
-        data[str(row[0])] = live_data
+        data[user] = live_data
 
     return data
 
@@ -58,6 +61,10 @@ def gen_dummy_data(live_data):
 
     return live_data
 
+def to_decimal(data_frame):
+    data_frame[OUTPUT_CONFIG['decimal_column']] = pd.to_numeric(data_frame[OUTPUT_CONFIG['decimal_column']], errors='coerce') / 1000
+    #data_frame.round({OUTPUT_CONFIG['decimal_column']: 3})
+
 
 def process():
     logging.info("Start to process live statistic.")
@@ -69,8 +76,10 @@ def process():
     writer = pd.ExcelWriter(OUTPUT_CONFIG['live_stats_output_xls'])
     for user, data in data_dic.items():
         data_frame = to_data_frame(data, date_rng)
-        logging.info("Going to write live data to sheet: " + user)
-        data_frame.to_excel(writer, sheet_name=user)
+        to_decimal(data_frame)
+        logging.info("Going to write live data to sheet: " + str(user))
+        print(data_frame)
+        data_frame.to_excel(writer, sheet_name=str(user))
     writer.save()
     logging.info("All sheets are written to excel [" + OUTPUT_CONFIG['live_stats_output_xls'] + "].")
 
