@@ -21,6 +21,7 @@ def get_data(accounts):
     data = {}
 
     for index, row in accounts.iterrows():
+        acc = row[0]
         user = row[1]
         passwd = row[2]
         cookies = row[3]
@@ -33,7 +34,7 @@ def get_data(accounts):
         else:
             logging.info("Retrieved live data: " + str(live_data))
 
-        data[user] = live_data
+        data[acc] = live_data
 
     return data
 
@@ -74,12 +75,12 @@ def process():
     date_rng = gen_date_range_index()
 
     writer = pd.ExcelWriter(OUTPUT_CONFIG['live_stats_output_xls'])
-    for user, data in data_dic.items():
+    for acc, data in data_dic.items():
         data_frame = to_data_frame(data, date_rng)
         to_decimal(data_frame)
-        logging.info("Going to write live data to sheet: " + str(user))
+        logging.info("Going to write live data to sheet: " + str(acc))
         print(data_frame)
-        data_frame.to_excel(writer, sheet_name=str(user))
+        data_frame.to_excel(writer, sheet_name=str(acc))
     writer.save()
     logging.info("All sheets are written to excel [" + OUTPUT_CONFIG['live_stats_output_xls'] + "].")
 
