@@ -4,3 +4,5 @@ liveStatistic/config.yaml
 liveStatistic/__pycache__/
 livestat.log
 test.py
+livecontcol/livecontcol/__pycache__/
+livecontcol/livecontcol/spiders/__pycache__/
